@@ -32,70 +32,17 @@ for i in range(len(boomList)):
 
     print()
 print(boomList[0])
-'''
-import random
-n = int(input("버튼 길이 입력 : "))
-n2 = int(input("폭탄 개수 입력 : "))
 
-boom = [random.sample(range(n), 2) for i in range (n2)]
+guessX = int(input("추측할 x 좌표 값 입력 : "))
+guessY = int(input("추측할 y 좌표 값 입력 : "))
 
-print(boom)
-'''
+test1 = [[guessX, guessY]]
 
-'''
-# 좌표 리스트 알고리즘...
-for i in range(6):
-    for j in range(6):
-        print("[[{} {}]]".format(i, j), end=', ')
-        
-list1 = [[(i, j) for i in range(6) for j in range(6)]]
-print(list1)
-'''
-
-'''
-dic = {1 : "김", 2 : "이", 3 : "강", '사' : "구"}
-
-print(dic.get('0'))
-'''
-'''
-t1 = input("영어만 입력하세요. : ")
-t2 = ''
-
-for i in t1:
-    if i.isalpha():
-        if i.islower():
-            t2 = i.upper()
-            print(t2, end='')
-        else:
-            print(i, end='')
-    else:
-        print(i, end='')
-'''
-
-'''
-print(ord('A'), ord('Z'), ord('a'), ord('z'))
-a1 = input(영어 단어 입력 : )
-a2 = int(input(시저 암호로 만들 숫자 입력 : ))
-a1_list = []
-
-for i in range(0, len(a1)):
-    if a1[i].isalpha():
-        a3 = chr(ord(a1[i]) + a2)
-    else:
-        a3 = chr(ord(a1[i]))
-
-    if a1[i].isupper():
-        if a3 > chr(ord('Z')):
-            a3 = chr(ord(a1[i]) + a2 - 26)
-    elif a1[i].islower():
-        if a3 > chr(ord('z')):
-            a3 = chr(ord(a1[i]) + a2 - 26)
-
-    a1_list.append(a3)
-
-result = ''.join(a1_list)
-print(result)
-'''
-
+# 입력한 좌표 값이 지뢰의 좌표 값과 일치하면 펑
+if test1[0] in boomList:
+    print("펑")
+else:
+    # 지뢰가 없는 좌표 값이라면 1, 2, 3 숫자들 만날 때 까지 주변 0을 지우는 코드
+    pass
 
 
