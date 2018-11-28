@@ -24,8 +24,6 @@ class Button(QToolButton):
         if event.button() == Qt.LeftButton:
             self.status = 0
             self.callback(self)
-            print("You click the LeftButton" , self)
         elif event.button() == Qt.RightButton:
             self.status += 1
             self.callback(self)
-            print("You click the RightButton", self)

@@ -13,9 +13,7 @@ class View(Observer, QWidget):
     def __init__(self, controller, parent=None):
         super().__init__(parent)
         self.controller = controller
-
-        self.setLevel()
-        self.size = (8 if self.level == 2 else (12 if self.level == 1 else 16))
+        self.setSize()
         self.mineButtons = [['' for i in range(self.size)] for j in range(self.size)]
         self.initUI()
 
@@ -104,18 +102,15 @@ class View(Observer, QWidget):
 
     def mineButtonClicked(self, button):
         if button.status == 0:
-            button.setText('?')
             button.setStyleSheet('color: rgb(0, 0, 0)')
             button.setEnabled(False)
         elif button.status == 1:
-            button.status += 1
             button.setText('✖')
             button.setStyleSheet('color: rgb(255, 0, 0)')
         else:
             button.status = 0
             button.setStyleSheet('color: rgb(0, 0, 0)')
-            button.setText('')
-        self.controller.guess_area(button.row, button.column)
+        self.controller.guessArea(button.row, button.column)
 
 
     def optionButtonClicked(self):
@@ -125,6 +120,9 @@ class View(Observer, QWidget):
         self.selectedLabel.setText(self.mineNumber)
         self.selectedLabel.setStyleSheet('color: rgb(0, 0, 255)')
 
+        self.controller.notifyArray(self.size, self.mineNumber)
+
+
     def menuButtonClicked(self):
         if self.sender() == self.exitButton:
             self.close()
@@ -133,7 +131,7 @@ class View(Observer, QWidget):
         elif self.sender() == self.restartButton:
             self.initUI()
         elif self.sender() == self.newGameButton:
-            if self.close(): self.__init__()
+            if self.close(): self.__init__(self.controller)
 
     def closeEvent(self, event):
         reply = QMessageBox.question(self, "Notice", "Are you sure to quit?",
@@ -143,7 +141,7 @@ class View(Observer, QWidget):
         else:
             event.ignore()
 
-    def setLevel(self):
+    def setSize(self):
         msgBox = QMessageBox()
         msgBox.setIcon(QMessageBox.Question)
         msgBox.setWindowTitle("Welcome to MineSweeper Game")
@@ -152,10 +150,34 @@ class View(Observer, QWidget):
         msgBox.addButton(QPushButton('Normal(12x12)'), QMessageBox.NoRole)
         msgBox.addButton(QPushButton('Easy(8x8)'), QMessageBox.YesRole)
         self.level = msgBox.exec_()
+        self.size = (8 if self.level == 2 else (12 if self.level == 1 else 16))
 
-    def update(self, observable):
-        data = observable.data
-        # 여기에 버튼 설명 변경
+    def update(self, row, column, value):
+        if value == -1:
+            i = 0
+            j = 0
+            for button in range(self.size ** 2):
+                self.mineButtons[i][j].setText('x')
+                self.mineButtons[i][j].setEnabled(False)
+                j += 1
+                if j == self.size:
+                    i += 1
+                    j = 0
+        else:
+            if value == 1:
+                self.mineButtons[row][column].setStyleSheet('color: rgb(0, 0, 255)')
+                self.mineButtons[row][column].setText(str(value))
+            elif value == 2:
+                self.mineButtons[row][column].setStyleSheet('color: rgb(0, 255, 50)')
+                self.mineButtons[row][column].setText(str(value))
+            elif value == 3:
+                self.mineButtons[row][column].setStyleSheet('color: rgb(255, 50, 0)')
+                self.mineButtonsself.mineButtons[row][column].setText(str(value))[row][column].setText(str(value))
+            elif value >= 4:
+                self.mineButtons[row][column].setStyleSheet('color: rgb(200, 200, 0)')
+            self.mineButtons[row][column].setText(str(value))
+            self.mineButtons[row][column].setEnabled(False)
+
 
 
 
