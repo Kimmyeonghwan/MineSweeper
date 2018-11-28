@@ -103,14 +103,21 @@ class View(Observer, QWidget):
     def mineButtonClicked(self, button):
         if button.status == 0:
             button.setStyleSheet('color: rgb(0, 0, 0)')
+            self.unknowns -= 1
             self.controller.guessArea(button.row, button.column)
         elif button.status == 1:
             button.setText('✖')
+            self.flags += 1
+            self.unknowns -= 1
             button.setStyleSheet('color: rgb(255, 0, 0)')
         else:
             button.status = 0
             button.setText('')
+            self.flags -= 1
+            self.unknowns += 1
             button.setStyleSheet('color: rgb(0, 0, 0)')
+        self.flagLabel.setText(str(self.flags))
+        self.unknownLabel.setText(str(self.unknowns))
 
 
     def optionButtonClicked(self):
@@ -168,16 +175,16 @@ class View(Observer, QWidget):
             if type(value) != int:
                 self.mineButtons[row][column].setText('0')
             elif value == 1:
-                self.mineButtons[row][column].setStyleSheet('color: rgb(0, 0, 255)')
+                self.mineButtons[row][column].setStyleSheet('color: rgb(0, 0, 150)')
                 self.mineButtons[row][column].setText(str(value))
             elif value == 2:
-                self.mineButtons[row][column].setStyleSheet('color: rgb(0, 255, 50)')
+                self.mineButtons[row][column].setStyleSheet('color: rgb(0, 150, 0)')
                 self.mineButtons[row][column].setText(str(value))
             elif value == 3:
-                self.mineButtons[row][column].setStyleSheet('color: rgb(255, 50, 0)')
+                self.mineButtons[row][column].setStyleSheet('color: rgb(150, 0, 0)')
                 self.mineButtons[row][column].setText(str(value))
             elif value >= 4:
-                self.mineButtons[row][column].setStyleSheet('color: rgb(200, 200, 0)')
+                self.mineButtons[row][column].setStyleSheet('color: rgb(150, 150, 0)')
             self.mineButtons[row][column].setText(str(value))
             self.mineButtons[row][column].setEnabled(False)
 
