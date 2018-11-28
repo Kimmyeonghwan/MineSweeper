@@ -14,11 +14,16 @@ class Button(QToolButton):
         self.status = status
         self.callback = callback
 
+        font = self.font()
+        font.setPointSize(font.pointSize()+5)
+
+
     def sizeHint(self):
         size = super(Button, self).sizeHint()
-        size.setHeight(size.height() + 10)
+        size.setHeight(size.height() + 15)
         size.setWidth(max(size.width(), size.height()))
         return size
+
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
