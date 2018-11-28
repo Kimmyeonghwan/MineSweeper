@@ -5,11 +5,13 @@ from PyQt5.QtWidgets import QWidget
 
 class Button(QToolButton):
 
-    def __init__(self, text, callback):
+    def __init__(self, text, row, column, status, callback):
         super().__init__()
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         self.setText(text)
-        self.clicked.connect(callback)
+        self.row = row
+        self.column = column
+        self.status = status
         self.callback = callback
 
     def sizeHint(self):
@@ -21,6 +23,9 @@ class Button(QToolButton):
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             self.status = 0
+            self.callback(self)
+            print("You click the LeftButton" , self)
         elif event.button() == Qt.RightButton:
-            self.status = 1
-        return QWidget.mousePressEvent(self, event)
+            self.status += 1
+            self.callback(self)
+            print("You click the RightButton", self)

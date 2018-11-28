@@ -29,7 +29,7 @@ class Button(QToolButton):
             print("You click the LeftButton" , self)
         elif event.button() == Qt.RightButton:
             self.callback(self, 1)
-            #Game.mineButtonRightClicked(self)
+            self.setFont
             print("You click the RightButton", self)
 
 
@@ -72,7 +72,7 @@ class Game(QWidget):
         i = 0
         j = 0
         for button in range(self.size**2):
-            self.mineButtons[i][j] = Button(' ', row=i, column=j, self.mineButtonClicked)
+            self.mineButtons[i][j] = Button(' ', i, j, self.mineButtonClicked)
             mineLayout.addWidget(self.mineButtons[i][j], i, j)
             j += 1
             if j == self.size:
@@ -95,12 +95,12 @@ class Game(QWidget):
         self.setWindowTitle("MineSweeper")
         self.show()
 
-        self.mineButtons[1][1].
+        #self.mineButtons[1][1].
 
 
     def mineButtonClicked(self, button, status=0):
         if status:
-            button.setText('!')
+            button.setText('✸')
         else:
             button.setText('?')
             button.setEnabled(False)

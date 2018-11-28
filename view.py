@@ -48,7 +48,7 @@ class View(Observer, QWidget):
         i = 0
         j = 0
         for button in range(self.size**2):
-            self.mineButtons[i][j] = Button('', self.mineButtonClicked)
+            self.mineButtons[i][j] = Button('', i, j, 0, self.mineButtonClicked)
             mineLayout.addWidget(self.mineButtons[i][j], i, j)
             j += 1
             if j == self.size:
@@ -102,15 +102,21 @@ class View(Observer, QWidget):
         self.setWindowTitle("MineSweeper")
         self.show()
 
-    def mineButtonClicked(self):
-        sender = self.sender()
-        print(sender)
-        if sender.status:
-            sender.setText('!')
+    def mineButtonClicked(self, button):
+        if button.status == 0:
+            button.setText('?')
+            button.setStyleSheet('color: rgb(0, 0, 0)')
+            button.setEnabled(False)
+        elif button.status == 1:
+            button.status += 1
+            button.setText('✖')
+            button.setStyleSheet('color: rgb(255, 0, 0)')
         else:
-            sender.setText('?')
-        sender.setEnabled(False)
+            button.status = 0
+            button.setStyleSheet('color: rgb(0, 0, 0)')
+            button.setText('')
         self.controller.guess_area(button.row, button.column)
+
 
     def optionButtonClicked(self):
         self.optionGroup.setEnabled(False)
