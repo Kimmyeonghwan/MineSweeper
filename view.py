@@ -103,14 +103,14 @@ class View(Observer, QWidget):
     def mineButtonClicked(self, button):
         if button.status == 0:
             button.setStyleSheet('color: rgb(0, 0, 0)')
-            button.setEnabled(False)
+            self.controller.guessArea(button.row, button.column)
         elif button.status == 1:
             button.setText('✖')
             button.setStyleSheet('color: rgb(255, 0, 0)')
         else:
             button.status = 0
+            button.setText('')
             button.setStyleSheet('color: rgb(0, 0, 0)')
-        self.controller.guessArea(button.row, button.column)
 
 
     def optionButtonClicked(self):
@@ -158,13 +158,16 @@ class View(Observer, QWidget):
             j = 0
             for button in range(self.size ** 2):
                 self.mineButtons[i][j].setText('x')
+                self.mineButtons[i][j].setStyleSheet('color: rgb(0, 0, 0)')
                 self.mineButtons[i][j].setEnabled(False)
                 j += 1
                 if j == self.size:
                     i += 1
                     j = 0
         else:
-            if value == 1:
+            if type(value) != int:
+                self.mineButtons[row][column].setText('0')
+            elif value == 1:
                 self.mineButtons[row][column].setStyleSheet('color: rgb(0, 0, 255)')
                 self.mineButtons[row][column].setText(str(value))
             elif value == 2:
@@ -172,7 +175,7 @@ class View(Observer, QWidget):
                 self.mineButtons[row][column].setText(str(value))
             elif value == 3:
                 self.mineButtons[row][column].setStyleSheet('color: rgb(255, 50, 0)')
-                self.mineButtonsself.mineButtons[row][column].setText(str(value))[row][column].setText(str(value))
+                self.mineButtons[row][column].setText(str(value))
             elif value >= 4:
                 self.mineButtons[row][column].setStyleSheet('color: rgb(200, 200, 0)')
             self.mineButtons[row][column].setText(str(value))

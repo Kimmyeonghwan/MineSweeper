@@ -7,4 +7,4 @@ class Controller:
         self.model.setArray(size, mineNumber)
 
     def guessArea(self, row, column):
-        self.model.guess(row, column)
+        self.model.guess(row+1, column+1)
