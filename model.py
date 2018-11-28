@@ -62,19 +62,19 @@ class Model(Observable):
         # 지뢰 발견
         if self.mine[row][column] == '*':
             self.current = [['x' for x in range(self.size+2)] for y in range(self.size+2)]
-            self.notify(row-1, column-1, -1)
+            self.notify(row, column, -1)
             return
 
         # 지뢰 인접 구역 발견
         if self.mine[row][column] != 0:
             self.current[row][column] = self.mine[row][column]
-            self.notify(row - 1, column - 1, self.current[row][column])
+            self.notify(row, column, self.current[row][column])
             return
 
         # 황무지 발견
-        self.mine[row][column] = '' #얘 왜?왜?왜얘왜왜왜?????
-        self.current[row][column] = ''
-        self.notify(row-1, column-1, 0)
+        self.mine[row][column] = ' ' #얘 왜?왜?왜얘왜왜왜?????
+        self.current[row][column] = ' '
+        self.notify(row, column, self.current[row][column])
 
         if parent == 'left':
             return (
@@ -119,7 +119,7 @@ class Model(Observable):
 
     def notify(self, row, column, value):
         for observer in self.observers:
-            observer.update(row, column, value)
+            observer.update(row-1, column-1, value)
 
 
     '''
@@ -133,3 +133,9 @@ class Model(Observable):
         self.mine[row+1][column] += 1
         self.mine[row+1][column+1] += 1
     '''
+
+if __name__ == '__main__':
+    model = Model()
+    model.setArray(10, 20)
+    model.guess(2,2)
+    model.printCurrentStatus()
