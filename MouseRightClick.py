@@ -4,20 +4,36 @@ from PyQt5.QtWidgets import QLayout, QGridLayout, QLabel, QComboBox
 from PyQt5.QtWidgets import QToolButton, QPushButton, QGroupBox
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QSizePolicy
+from PyQt5 import QtGui, QtCore
+
 
 class Button(QToolButton):
 
-    def __init__(self, text, callback):
+    def __init__(self, text, row, column, callback):
         super().__init__()
+        self.row = row
+        self.column = column
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         self.setText(text)
-        self.clicked.connect(callback)
+        self.callback = callback
 
     def sizeHint(self):
         size = super(Button, self).sizeHint()
         size.setHeight(size.height() + 10)
         size.setWidth(max(size.width(), size.height()))
         return size
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.callback(self, 0)
+            print("You click the LeftButton" , self)
+        elif event.button() == Qt.RightButton:
+            self.callback(self, 1)
+            #Game.mineButtonRightClicked(self)
+            print("You click the RightButton", self)
+
+
+
 
 
 class Game(QWidget):
@@ -27,6 +43,15 @@ class Game(QWidget):
         self.size = size
         self.mineButtons = [['0' for i in range(self.size)] for j in range(self.size)]
         self.initUI()
+
+    '''
+    def mousePressEvent(self, QMouseEvent):
+        if QMouseEvent.button() == Qt.LeftButton:
+            print("You click the LeftButton!")
+
+        elif QMouseEvent.button() == Qt.RightButton:
+            print("You click the RightButton!")
+    '''
 
     def initUI(self):
         optionLayout = QGridLayout()
@@ -47,7 +72,7 @@ class Game(QWidget):
         i = 0
         j = 0
         for button in range(self.size**2):
-            self.mineButtons[i][j] = Button(' ', self.mineButtonClicked)
+            self.mineButtons[i][j] = Button(' ', row=i, column=j, self.mineButtonClicked)
             mineLayout.addWidget(self.mineButtons[i][j], i, j)
             j += 1
             if j == self.size:
@@ -70,10 +95,16 @@ class Game(QWidget):
         self.setWindowTitle("MineSweeper")
         self.show()
 
+        self.mineButtons[1][1].
+
+
     def mineButtonClicked(self, button, status=0):
-        sender = self.sender()
-        sender.setText('1')
-        sender.setEnabled(False)
+        if status:
+            button.setText('!')
+        else:
+            button.setText('?')
+            button.setEnabled(False)
+
 
     def optionButtonClicked(self):
         self.optionBox.setEnabled(False)
@@ -88,3 +119,24 @@ if __name__ == '__main__':
     game.show()
     sys.exit(app.exec_())
 
+'''
+class MyWidget(QWidget):
+
+
+    def __init__(self):
+        super(MyWidget, self).__init__()
+
+    def mousePressEvent(self, QMouseEvent):
+        if QMouseEvent.button() == Qt.LeftButton:
+            print("Left Button Clicked")
+        elif QMouseEvent.button() == Qt.RightButton:
+            #do what you want here
+            print("Right Button Clicked")
+
+if __name__ == "__main__":
+
+    app = QApplication(sys.argv)
+    mw = MyWidget()
+    mw.show()
+    sys.exit(app.exec_())
+'''
