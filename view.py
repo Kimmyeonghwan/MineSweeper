@@ -108,7 +108,7 @@ class View(Observer, QWidget):
 
 
         elif button.status == 1:
-            if int(self.mineNumber) - self.flags > 0:  # 최대 폭탄 개수를 넘기게 깃발 꽂기 방지
+            if int(self.mineNumber) - self.flags > 0:  # 깃발 개수는 최대 폭탄 개수를 넘길 수 없음
                 self.unknowns -= 1
                 self.flags += 1
                 button.setText('✖')
@@ -121,7 +121,7 @@ class View(Observer, QWidget):
                 button.setText('')
                 button.setStyleSheet('color: rgb(0, 0, 0)')
 
-            # 폭탄 값 5개, 깃발 5개를 꽂으면 더이상 우클릭으로 깃발을 만들지 않음.
+            # 최대 폭탄 개수가 5개라면, 깃발 5개를 꽂으면 더이상 우클릭으로 깃발을 만들지 않음.
             # 그런 상태에서 좌클릭으로 popzero를 터트리면, Total Mines 값이 최대 폭탄 값으로 돌아가야하는데
             # 여전히 0이라서 우클릭으로 깃발을 꽂지 못하는 버그 발생
             # flags, unknowns 값을 update에서 수정해주면 좋을 것 같은데.. 뷰 자체에 구현을 해봤지만 의미 없었음
