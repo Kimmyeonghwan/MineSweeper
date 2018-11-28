@@ -121,14 +121,16 @@ class View(Observer, QWidget):
                 button.setText('')
                 button.setStyleSheet('color: rgb(0, 0, 0)')
 
-            # 최대 폭탄 개수가 5개라면, 깃발 5개를 꽂으면 더이상 우클릭으로 깃발을 만들지 않음.
-            # 그런 상태에서 좌클릭으로 popzero를 터트리면, Total Mines 값이 최대 폭탄 값으로 돌아가야하는데
-            # 여전히 0이라서 우클릭으로 깃발을 꽂지 못하는 버그 발생
-            # flags, unknowns 값을 update에서 수정해주면 좋을 것 같은데.. 뷰 자체에 구현을 해봤지만 의미 없었음
-            # flags, unknowns 값을 update로 수정하려면 변수들을 모델로 이동 + 로직 추가 ...
-            self.selectedLabel.setText(str(int(self.mineNumber) - self.flags))  # Total Mines 값은 (폭탄 개수 - 깃발 꽂은 개수)
-            self.flagLabel.setText(str(self.flags))
-            self.unknownLabel.setText(str(self.unknowns))
+        # 최대 폭탄 개수가 5개라면, 깃발 5개를 꽂으면 더이상 우클릭으로 깃발을 만들지 않음.
+        # 그런 상태에서 좌클릭으로 popzero를 터트리면, Total Mines 값이 최대 폭탄 값으로 돌아가야하는데
+        # 여전히 0이라서 우클릭으로 깃발을 꽂지 못하는 버그 발생
+        # 해당 버그는 popzero가 터트렸을 때, unknowns 값이 1만 감소하는 것을 보면 이해하기 쉬울 것 같음.
+        # 아마 해결 방안도 똑같거나 비슷하다고 생각함.
+        # flags, unknowns 값을 update에서 수정해주면 좋을 것 같은데.. 뷰 자체에 구현을 해봤지만 의미 없었음
+        # flags, unknowns 값을 update로 수정하려면 변수들을 모델로 이동 + 로직 추가 ...
+        self.selectedLabel.setText(str(int(self.mineNumber) - self.flags))  # Total Mines 값은 (폭탄 개수 - 깃발 꽂은 개수)
+        self.flagLabel.setText(str(self.flags))
+        self.unknownLabel.setText(str(self.unknowns))
 
         # 뷰 자체에서 업데이트하는 것은 옵저버 패턴의 업데이트가 아니다. 의미 없어서 주석처리
         # 지워도 무방
