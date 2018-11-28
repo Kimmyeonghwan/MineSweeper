@@ -105,17 +105,24 @@ class View(Observer, QWidget):
             button.setStyleSheet('color: rgb(0, 0, 0)')
             self.unknowns -= 1
             self.controller.guessArea(button.row, button.column)
-        elif button.status == 1:
-            button.setText('✖')
-            self.flags += 1
-            self.unknowns -= 1
-            button.setStyleSheet('color: rgb(255, 0, 0)')
+        if int(self.mineNumber) - self.flags > 0: # 최대 폭탄 개수를 넘기게 깃발 꽂기 방지
+            if button.status == 1:
+                button.setText('✖')
+                self.flags += 1
+                self.unknowns -= 1
+                button.setStyleSheet('color: rgb(255, 0, 0)')
+            else:
+                button.status = 0
+                button.setText('')
+                self.flags -= 1
+                self.unknowns += 1
+                button.setStyleSheet('color: rgb(0, 0, 0)')
         else:
-            button.status = 0
-            button.setText('')
-            self.flags -= 1
-            self.unknowns += 1
-            button.setStyleSheet('color: rgb(0, 0, 0)')
+            pass
+        # 폭탄 값 5개, 깃발 5개를 꽂으면 더이상 우클릭으로 깃발을 만들지 않음.
+        # 그런 상태에서 좌클릭으로 popzero를 터트리면, Total Mines 값이 최대 폭탄 값으로 돌아가야하는데
+        # 여전히 0이라서 우클릭으로 깃발을 꽂지 못하는 버그 발
+        self.selectedLabel.setText(str(int(self.mineNumber) - self.flags)) # Total Mines 값은 (폭탄 개수 - 깃발 꽂은 개수)
         self.flagLabel.setText(str(self.flags))
         self.unknownLabel.setText(str(self.unknowns))
 
