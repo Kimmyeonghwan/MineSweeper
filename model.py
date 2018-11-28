@@ -3,6 +3,7 @@ from observable import Observable
 class Model(Observable):
 
     def __init__(self, n, mines):
+        Observable.__init__(self)
         self.size = n
         self.mine = [[0 for x in range(n+2)] for y in range(n+2)]
         self.current = [['_' for x in range(n+2)] for y in range(n+2)]
