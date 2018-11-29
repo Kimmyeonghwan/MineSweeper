@@ -19,7 +19,7 @@ class View(Observer, QWidget):
 
 
     def initUI(self):
-        optionLayout = QGridLayout()
+        self.optionLayout = QGridLayout()
         self.optionGroup = QGroupBox("Mine Options")
         self.optionLabel = QLabel("Select the number of mines : ")
         self.optionBox = QComboBox()
@@ -27,34 +27,34 @@ class View(Observer, QWidget):
         self.optionBox.setCurrentIndex(3*(self.size-1))
         self.optionButton = QPushButton("Start")
         self.optionButton.clicked.connect(self.optionButtonClicked)
-        optionLayout.addWidget(self.optionLabel, 0, 0)
-        optionLayout.addWidget(self.optionBox, 0, 1)
-        optionLayout.addWidget(self.optionButton, 0, 2)
-        self.optionGroup.setLayout(optionLayout)
+        self.optionLayout.addWidget(self.optionLabel, 0, 0)
+        self.optionLayout.addWidget(self.optionBox, 0, 1)
+        self.optionLayout.addWidget(self.optionButton, 0, 2)
+        self.optionGroup.setLayout(self.optionLayout)
 
-        selectedLayout = QGridLayout()
+        self.selectedLayout = QGridLayout()
         self.selectedGroup = QGroupBox("Total Mines")
         self.selectedLabel = QLabel()
         self.selectedLabel.setAlignment(Qt.AlignCenter)
         self.selectedLabel.font().setPointSize(self.selectedLabel.font().pointSize() + 10)
-        selectedLayout.addWidget(self.selectedLabel, 0, 0)
-        self.selectedGroup.setLayout(selectedLayout)
+        self.selectedLayout.addWidget(self.selectedLabel, 0, 0)
+        self.selectedGroup.setLayout(self.selectedLayout)
 
-        mineLayout = QGridLayout()
+        self.mineLayout = QGridLayout()
         self.mineGroup = QGroupBox("Game Main")
         self.mineGroup.setEnabled(False)
         i = 0
         j = 0
         for button in range(self.size**2):
             self.mineButtons[i][j] = Button('', i, j, 0, self.mineButtonClicked)
-            mineLayout.addWidget(self.mineButtons[i][j], i, j)
+            self.mineLayout.addWidget(self.mineButtons[i][j], i, j)
             j += 1
             if j == self.size:
                 i += 1
                 j = 0
-        self.mineGroup.setLayout(mineLayout)
+        self.mineGroup.setLayout(self.mineLayout)
 
-        statusLayout = QGridLayout()
+        self.statusLayout = QGridLayout()
         self.statusGroup = QGroupBox("Game Status")
         self.arrayDisplay = QLabel("Array size : ")
         self.arrayLabel = QLabel(str(self.size)+"x"+str(self.size))
@@ -64,41 +64,77 @@ class View(Observer, QWidget):
         self.flagDisplay = QLabel("Flag areas : ")
         self.flags = 0
         self.flagLabel = QLabel(str(self.flags))
-        statusLayout.addWidget(self.arrayDisplay, 0, 0)
-        statusLayout.addWidget(self.arrayLabel, 0, 1)
-        statusLayout.addWidget(self.unknownDisplay, 1, 0)
-        statusLayout.addWidget(self.unknownLabel, 1, 1)
-        statusLayout.addWidget(self.flagDisplay, 2, 0)
-        statusLayout.addWidget(self.flagLabel, 2, 1)
-        self.statusGroup.setLayout(statusLayout)
+        self.statusLayout.addWidget(self.arrayDisplay, 0, 0)
+        self.statusLayout.addWidget(self.arrayLabel, 0, 1)
+        self.statusLayout.addWidget(self.unknownDisplay, 1, 0)
+        self.statusLayout.addWidget(self.unknownLabel, 1, 1)
+        self.statusLayout.addWidget(self.flagDisplay, 2, 0)
+        self.statusLayout.addWidget(self.flagLabel, 2, 1)
+        self.statusGroup.setLayout(self.statusLayout)
 
-        menuLayout = QGridLayout()
+        self.menuLayout = QGridLayout()
         self.menuGroup = QGroupBox("Game menu")
         self.exitButton = QPushButton("Exit")
         self.restartButton = QPushButton("Restart")
         self.newGameButton = QPushButton("New Game")
         self.giveUpButton = QPushButton("Give up game")
-        menuLayout.addWidget(self.giveUpButton, 0, 0)
-        menuLayout.addWidget(self.restartButton, 0, 1)
-        menuLayout.addWidget(self.newGameButton, 0, 2)
-        menuLayout.addWidget(self.exitButton, 0, 3)
-        self.menuGroup.setLayout(menuLayout)
+        self.menuLayout.addWidget(self.giveUpButton, 0, 0)
+        self.menuLayout.addWidget(self.restartButton, 0, 1)
+        self.menuLayout.addWidget(self.newGameButton, 0, 2)
+        self.menuLayout.addWidget(self.exitButton, 0, 3)
+        self.menuGroup.setLayout(self.menuLayout)
 
         self.exitButton.clicked.connect(self.menuButtonClicked)
         self.restartButton.clicked.connect(self.menuButtonClicked)
         self.newGameButton.clicked.connect(self.menuButtonClicked)
         self.giveUpButton.clicked.connect(self.menuButtonClicked)
 
-        mainLayout = QGridLayout()
-        mainLayout.addWidget(self.optionGroup, 0, 0)
-        mainLayout.addWidget(self.selectedGroup, 0, 1)
-        mainLayout.addWidget(self.mineGroup, 1, 0)
-        mainLayout.addWidget(self.statusGroup, 1, 1)
-        mainLayout.addWidget(self.menuGroup, 2, 0, 1, 2)
+        self.mainLayout = QGridLayout()
+        self.mainLayout.addWidget(self.optionGroup, 0, 0)
+        self.mainLayout.addWidget(self.selectedGroup, 0, 1)
+        self.mainLayout.addWidget(self.mineGroup, 1, 0)
+        self.mainLayout.addWidget(self.statusGroup, 1, 1)
+        self.mainLayout.addWidget(self.menuGroup, 2, 0, 1, 2)
 
-        self.setLayout(mainLayout)
+        self.setLayout(self.mainLayout)
         self.setWindowTitle("MineSweeper")
         self.show()
+        '''
+    def delUI(self):
+        self.optionGroup.close()
+        self.menuGroup.close()
+        self.selectedGroup.close()
+        self.statusGroup.close()
+        self.mineGroup.close()
+        self.close()
+
+        #self.optionButton.close()
+        #self.optionLabel.close()
+        #self.optionBox.close()
+        #self.exitButton.close()
+
+
+        #for i in range(self.optionLayout.count()): self.optionLayout.itemAt(i).widget().close()
+        '''
+
+    def reStart(self):
+        self.optionGroup.setEnabled(True)
+        self.mineGroup.setEnabled(False)
+        i = 0
+        j = 0
+        for button in range(self.size**2):
+            self.mineButtons[i][j] = Button('', i, j, 0, self.mineButtonClicked)
+            self.mineLayout.addWidget(self.mineButtons[i][j], i, j)
+            j += 1
+            if j == self.size:
+                i += 1
+                j = 0
+        self.mineGroup.setLayout(self.mineLayout)
+
+    def giveUp(self):
+        # 버튼 정답을 다 알려주는 코드 작성 (미완성)
+        self.optionGroup.setEnabled(True)
+        self.mineGroup.setEnabled(False)
 
     def mineButtonClicked(self, button):
         if button.status == 0:
@@ -132,41 +168,6 @@ class View(Observer, QWidget):
         self.flagLabel.setText(str(self.flags))
         self.unknownLabel.setText(str(self.unknowns))
 
-        # 뷰 자체에서 업데이트하는 것은 옵저버 패턴의 업데이트가 아니다. 의미 없어서 주석처리
-        # 지워도 무방
-        '''
-    def mineButtonClicked(self, button):
-        doing = 9
-        if button.status == 0:
-            button.setStyleSheet('color: rgb(0, 0, 0)')
-            self.controller.guessArea(button.row, button.column)
-            doing = 0
-
-        elif button.status == 1:
-            if int(self.mineNumber) - self.flags > 0:  # 최대 폭탄 개수를 넘기게 깃발 꽂기 방지
-                button.setText('✖')
-                button.setStyleSheet('color: rgb(255, 0, 0)')
-                doing = 1
-        else:
-            if button.text() == '✖':
-                button.status = 0
-                button.setText('')
-                button.setStyleSheet('color: rgb(0, 0, 0)')
-                doing = 2
-        self.update2(doing)
-            
-
-
-        # 폭탄 값 5개, 깃발 5개를 꽂으면 더이상 우클릭으로 깃발을 만들지 않음.
-        # 그런 상태에서 좌클릭으로 popzero를 터트리면, Total Mines 값이 최대 폭탄 값으로 돌아가야하는데
-        # 여전히 0이라서 우클릭으로 깃발을 꽂지 못하는 버그 발생
-        # flags, unknowns 값을 update에서 수정해주면 좋을 것 같은데..
-        # flags, unknowns 값을 update로 수정하려면 변수들을 모델로 이동 + 로직 추가 ...
-        self.selectedLabel.setText(str(int(self.mineNumber) - self.flags)) # Total Mines 값은 (폭탄 개수 - 깃발 꽂은 개수)
-        self.flagLabel.setText(str(self.flags))
-        self.unknownLabel.setText(str(self.unknowns))
-        '''
-
 
     def optionButtonClicked(self):
         self.optionGroup.setEnabled(False)
@@ -182,11 +183,12 @@ class View(Observer, QWidget):
         if self.sender() == self.exitButton:
             self.close()
         elif self.sender() == self.giveUpButton:
-            pass
+            self.giveUp()
         elif self.sender() == self.restartButton:
-            self.initUI()
+            self.reStart()
         elif self.sender() == self.newGameButton:
             if self.close(): self.__init__(self.controller)
+
 
     def closeEvent(self, event):
         reply = QMessageBox.question(self, "Notice", "Are you sure to quit?",
@@ -195,6 +197,7 @@ class View(Observer, QWidget):
             event.accept()
         else:
             event.ignore()
+
 
     def setSize(self):
         msgBox = QMessageBox()
@@ -207,7 +210,8 @@ class View(Observer, QWidget):
         self.level = msgBox.exec_()
         self.size = (8 if self.level == 2 else (12 if self.level == 1 else 16))
 
-    def update(self, row, column, value):
+
+    def update(self, row, column, value, mineNumbers):
         if value == -1:
             i = 0
             j = 0
@@ -234,32 +238,17 @@ class View(Observer, QWidget):
             elif value >= 4:
                 self.mineButtons[row][column].setStyleSheet('color: rgb(150, 150, 0)')
             self.mineButtons[row][column].setText(str(value))
+            self.mineButtons[row][column].setStyleSheet("background-color: gray") #버튼 배경 색
             self.mineButtons[row][column].setEnabled(False)
 
+        self.mineNumber = mineNumbers
 
-    # 뷰 자체에서 업데이트하는 것은 옵저버 패턴의 업데이트가 아니다. 의미 없어서 주석처리
-    # 지워도 무방
-    '''
-    def update2(self, value):
-        if value == 0:
-            self.unknowns -= 1
-
-        elif value == 1:
-            if int(self.mineNumber) - self.flags > 0:  # 최대 폭탄 개수를 넘기게 깃발 꽂기 방지
-                self.flags += 1
-                self.unknowns -= 1
-
-        else:
-            if value == 2:
-                self.flags -= 1
-                self.unknowns += 1
-                '''
 
 
 if __name__ == '__main__':
     import sys
     app = QApplication(sys.argv)
-    game = View(10)
+    game = View()
     game.show()
     sys.exit(app.exec_())
 
