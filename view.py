@@ -19,7 +19,7 @@ class View(Observer, QWidget):
 
 
     def initUI(self):
-        self.optionLayout = QGridLayout()
+        optionLayout = QGridLayout()
         self.optionGroup = QGroupBox("Mine Options")
         self.optionLabel = QLabel("Select the number of mines : ")
         self.optionBox = QComboBox()
@@ -27,18 +27,18 @@ class View(Observer, QWidget):
         self.optionBox.setCurrentIndex(3*(self.size-1))
         self.optionButton = QPushButton("Start")
         self.optionButton.clicked.connect(self.optionButtonClicked)
-        self.optionLayout.addWidget(self.optionLabel, 0, 0)
-        self.optionLayout.addWidget(self.optionBox, 0, 1)
-        self.optionLayout.addWidget(self.optionButton, 0, 2)
-        self.optionGroup.setLayout(self.optionLayout)
+        optionLayout.addWidget(self.optionLabel, 0, 0)
+        optionLayout.addWidget(self.optionBox, 0, 1)
+        optionLayout.addWidget(self.optionButton, 0, 2)
+        self.optionGroup.setLayout(optionLayout)
 
-        self.selectedLayout = QGridLayout()
+        selectedLayout = QGridLayout()
         self.selectedGroup = QGroupBox("Total Mines")
         self.selectedLabel = QLabel()
         self.selectedLabel.setAlignment(Qt.AlignCenter)
         self.selectedLabel.font().setPointSize(self.selectedLabel.font().pointSize() + 10)
-        self.selectedLayout.addWidget(self.selectedLabel, 0, 0)
-        self.selectedGroup.setLayout(self.selectedLayout)
+        selectedLayout.addWidget(self.selectedLabel, 0, 0)
+        self.selectedGroup.setLayout(selectedLayout)
 
         self.mineLayout = QGridLayout()
         self.mineGroup = QGroupBox("Game Main")
@@ -54,7 +54,7 @@ class View(Observer, QWidget):
                 j = 0
         self.mineGroup.setLayout(self.mineLayout)
 
-        self.statusLayout = QGridLayout()
+        statusLayout = QGridLayout()
         self.statusGroup = QGroupBox("Game Status")
         self.arrayDisplay = QLabel("Array size : ")
         self.arrayLabel = QLabel(str(self.size)+"x"+str(self.size))
@@ -64,58 +64,41 @@ class View(Observer, QWidget):
         self.flagDisplay = QLabel("Flag areas : ")
         self.flags = 0
         self.flagLabel = QLabel(str(self.flags))
-        self.statusLayout.addWidget(self.arrayDisplay, 0, 0)
-        self.statusLayout.addWidget(self.arrayLabel, 0, 1)
-        self.statusLayout.addWidget(self.unknownDisplay, 1, 0)
-        self.statusLayout.addWidget(self.unknownLabel, 1, 1)
-        self.statusLayout.addWidget(self.flagDisplay, 2, 0)
-        self.statusLayout.addWidget(self.flagLabel, 2, 1)
-        self.statusGroup.setLayout(self.statusLayout)
+        statusLayout.addWidget(self.arrayDisplay, 0, 0)
+        statusLayout.addWidget(self.arrayLabel, 0, 1)
+        statusLayout.addWidget(self.unknownDisplay, 1, 0)
+        statusLayout.addWidget(self.unknownLabel, 1, 1)
+        statusLayout.addWidget(self.flagDisplay, 2, 0)
+        statusLayout.addWidget(self.flagLabel, 2, 1)
+        self.statusGroup.setLayout(statusLayout)
 
-        self.menuLayout = QGridLayout()
+        menuLayout = QGridLayout()
         self.menuGroup = QGroupBox("Game menu")
         self.exitButton = QPushButton("Exit")
         self.restartButton = QPushButton("Restart")
         self.newGameButton = QPushButton("New Game")
         self.giveUpButton = QPushButton("Give up game")
-        self.menuLayout.addWidget(self.giveUpButton, 0, 0)
-        self.menuLayout.addWidget(self.restartButton, 0, 1)
-        self.menuLayout.addWidget(self.newGameButton, 0, 2)
-        self.menuLayout.addWidget(self.exitButton, 0, 3)
-        self.menuGroup.setLayout(self.menuLayout)
+        menuLayout.addWidget(self.giveUpButton, 0, 0)
+        menuLayout.addWidget(self.restartButton, 0, 1)
+        menuLayout.addWidget(self.newGameButton, 0, 2)
+        menuLayout.addWidget(self.exitButton, 0, 3)
+        self.menuGroup.setLayout(menuLayout)
 
         self.exitButton.clicked.connect(self.menuButtonClicked)
         self.restartButton.clicked.connect(self.menuButtonClicked)
         self.newGameButton.clicked.connect(self.menuButtonClicked)
         self.giveUpButton.clicked.connect(self.menuButtonClicked)
 
-        self.mainLayout = QGridLayout()
-        self.mainLayout.addWidget(self.optionGroup, 0, 0)
-        self.mainLayout.addWidget(self.selectedGroup, 0, 1)
-        self.mainLayout.addWidget(self.mineGroup, 1, 0)
-        self.mainLayout.addWidget(self.statusGroup, 1, 1)
-        self.mainLayout.addWidget(self.menuGroup, 2, 0, 1, 2)
+        mainLayout = QGridLayout()
+        mainLayout.addWidget(self.optionGroup, 0, 0)
+        mainLayout.addWidget(self.selectedGroup, 0, 1)
+        mainLayout.addWidget(self.mineGroup, 1, 0)
+        mainLayout.addWidget(self.statusGroup, 1, 1)
+        mainLayout.addWidget(self.menuGroup, 2, 0, 1, 2)
 
-        self.setLayout(self.mainLayout)
+        self.setLayout(mainLayout)
         self.setWindowTitle("MineSweeper")
         self.show()
-        '''
-    def delUI(self):
-        self.optionGroup.close()
-        self.menuGroup.close()
-        self.selectedGroup.close()
-        self.statusGroup.close()
-        self.mineGroup.close()
-        self.close()
-
-        #self.optionButton.close()
-        #self.optionLabel.close()
-        #self.optionBox.close()
-        #self.exitButton.close()
-
-
-        #for i in range(self.optionLayout.count()): self.optionLayout.itemAt(i).widget().close()
-        '''
 
     def reStart(self):
         self.optionGroup.setEnabled(True)
