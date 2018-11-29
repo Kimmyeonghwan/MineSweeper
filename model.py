@@ -59,7 +59,7 @@ class Model(Observable):
         if (not(0 < row <= self.size)) or (not(0 < column <= self.size)):
             return
 
-        # 지뢰 발견
+        # Found bomb.
         if self.mine[row][column] == '*':
             self.current = [['x' for x in range(self.size+2)] for y in range(self.size+2)]
             self.notify(row, column, -1)
