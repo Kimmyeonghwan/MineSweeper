@@ -40,19 +40,19 @@ class View(Observer, QWidget):
         selectedLayout.addWidget(self.selectedLabel, 0, 0)
         self.selectedGroup.setLayout(selectedLayout)
 
-        mineLayout = QGridLayout()
+        self.mineLayout = QGridLayout()
         self.mineGroup = QGroupBox("Game Main")
         self.mineGroup.setEnabled(False)
         i = 0
         j = 0
         for button in range(self.size**2):
             self.mineButtons[i][j] = Button('', i, j, 0, self.mineButtonClicked)
-            mineLayout.addWidget(self.mineButtons[i][j], i, j)
+            self.mineLayout.addWidget(self.mineButtons[i][j], i, j)
             j += 1
             if j == self.size:
                 i += 1
                 j = 0
-        self.mineGroup.setLayout(mineLayout)
+        self.mineGroup.setLayout(self.mineLayout)
 
         statusLayout = QGridLayout()
         self.statusGroup = QGroupBox("Game Status")
@@ -100,6 +100,25 @@ class View(Observer, QWidget):
         self.setWindowTitle("MineSweeper")
         self.show()
 
+    def reStart(self):
+        self.optionGroup.setEnabled(True)
+        self.mineGroup.setEnabled(False)
+        i = 0
+        j = 0
+        for button in range(self.size**2):
+            self.mineButtons[i][j] = Button('', i, j, 0, self.mineButtonClicked)
+            self.mineLayout.addWidget(self.mineButtons[i][j], i, j)
+            j += 1
+            if j == self.size:
+                i += 1
+                j = 0
+        self.mineGroup.setLayout(self.mineLayout)
+
+    def giveUp(self):
+        # 버튼 정답을 다 알려주는 코드 작성 (미완성)
+        self.optionGroup.setEnabled(True)
+        self.mineGroup.setEnabled(False)
+
     def mineButtonClicked(self, button):
         if button.status == 0:
             self.unknowns -= 1
@@ -132,41 +151,6 @@ class View(Observer, QWidget):
         self.flagLabel.setText(str(self.flags))
         self.unknownLabel.setText(str(self.unknowns))
 
-        # 뷰 자체에서 업데이트하는 것은 옵저버 패턴의 업데이트가 아니다. 의미 없어서 주석처리
-        # 지워도 무방
-        '''
-    def mineButtonClicked(self, button):
-        doing = 9
-        if button.status == 0:
-            button.setStyleSheet('color: rgb(0, 0, 0)')
-            self.controller.guessArea(button.row, button.column)
-            doing = 0
-
-        elif button.status == 1:
-            if int(self.mineNumber) - self.flags > 0:  # 최대 폭탄 개수를 넘기게 깃발 꽂기 방지
-                button.setText('✖')
-                button.setStyleSheet('color: rgb(255, 0, 0)')
-                doing = 1
-        else:
-            if button.text() == '✖':
-                button.status = 0
-                button.setText('')
-                button.setStyleSheet('color: rgb(0, 0, 0)')
-                doing = 2
-        self.update2(doing)
-            
-
-
-        # 폭탄 값 5개, 깃발 5개를 꽂으면 더이상 우클릭으로 깃발을 만들지 않음.
-        # 그런 상태에서 좌클릭으로 popzero를 터트리면, Total Mines 값이 최대 폭탄 값으로 돌아가야하는데
-        # 여전히 0이라서 우클릭으로 깃발을 꽂지 못하는 버그 발생
-        # flags, unknowns 값을 update에서 수정해주면 좋을 것 같은데..
-        # flags, unknowns 값을 update로 수정하려면 변수들을 모델로 이동 + 로직 추가 ...
-        self.selectedLabel.setText(str(int(self.mineNumber) - self.flags)) # Total Mines 값은 (폭탄 개수 - 깃발 꽂은 개수)
-        self.flagLabel.setText(str(self.flags))
-        self.unknownLabel.setText(str(self.unknowns))
-        '''
-
 
     def optionButtonClicked(self):
         self.optionGroup.setEnabled(False)
@@ -182,11 +166,12 @@ class View(Observer, QWidget):
         if self.sender() == self.exitButton:
             self.close()
         elif self.sender() == self.giveUpButton:
-            pass
+            self.giveUp()
         elif self.sender() == self.restartButton:
-            self.initUI()
+            self.reStart()
         elif self.sender() == self.newGameButton:
             if self.close(): self.__init__(self.controller)
+
 
     def closeEvent(self, event):
         reply = QMessageBox.question(self, "Notice", "Are you sure to quit?",
@@ -195,6 +180,7 @@ class View(Observer, QWidget):
             event.accept()
         else:
             event.ignore()
+
 
     def setSize(self):
         msgBox = QMessageBox()
@@ -207,7 +193,8 @@ class View(Observer, QWidget):
         self.level = msgBox.exec_()
         self.size = (8 if self.level == 2 else (12 if self.level == 1 else 16))
 
-    def update(self, row, column, value):
+
+    def update(self, row, column, value, mineNumbers):
         if value == -1:
             i = 0
             j = 0
@@ -234,32 +221,17 @@ class View(Observer, QWidget):
             elif value >= 4:
                 self.mineButtons[row][column].setStyleSheet('color: rgb(150, 150, 0)')
             self.mineButtons[row][column].setText(str(value))
+            self.mineButtons[row][column].setStyleSheet("background-color: gray") #버튼 배경 색
             self.mineButtons[row][column].setEnabled(False)
 
+        self.mineNumber = mineNumbers
 
-    # 뷰 자체에서 업데이트하는 것은 옵저버 패턴의 업데이트가 아니다. 의미 없어서 주석처리
-    # 지워도 무방
-    '''
-    def update2(self, value):
-        if value == 0:
-            self.unknowns -= 1
-
-        elif value == 1:
-            if int(self.mineNumber) - self.flags > 0:  # 최대 폭탄 개수를 넘기게 깃발 꽂기 방지
-                self.flags += 1
-                self.unknowns -= 1
-
-        else:
-            if value == 2:
-                self.flags -= 1
-                self.unknowns += 1
-                '''
 
 
 if __name__ == '__main__':
     import sys
     app = QApplication(sys.argv)
-    game = View(10)
+    game = View()
     game.show()
     sys.exit(app.exec_())
 

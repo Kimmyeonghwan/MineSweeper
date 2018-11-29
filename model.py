@@ -10,6 +10,7 @@ class Model(Observable):
         self.size = 0
         self.mine = []
         self.current = []
+        self.mineNumbers = 0
 
 
     def setArray(self, size, mineNumber):
@@ -28,6 +29,7 @@ class Model(Observable):
         self.setCount()
 
         self.printMineStatus()
+        self.mineNumbers = mineNumber
 
 
     def setCount(self):
@@ -62,19 +64,19 @@ class Model(Observable):
         # Found bomb.
         if self.mine[row][column] == '*':
             self.current = [['x' for x in range(self.size+2)] for y in range(self.size+2)]
-            self.notify(row, column, -1)
+            self.notify(row, column, -1, self.mineNumbers)
             return
 
         # 지뢰 인접 구역 발견
         if self.mine[row][column] != 0:
             self.current[row][column] = self.mine[row][column]
-            self.notify(row, column, self.current[row][column])
+            self.notify(row, column, self.current[row][column], self.mineNumbers)
             return
 
         # 황무지 발견
         self.mine[row][column] = ' ' #얘 왜?왜?왜얘왜왜왜?????
         self.current[row][column] = ' '
-        self.notify(row, column, self.current[row][column])
+        self.notify(row, column, self.current[row][column], self.mineNumbers)
 
         if parent == 'left':
             return (
@@ -117,9 +119,9 @@ class Model(Observable):
                 print(self.current[i][j], end=' ')
             print()
 
-    def notify(self, row, column, value):
+    def notify(self, row, column, value, mine):
         for observer in self.observers:
-            observer.update(row-1, column-1, value)
+            observer.update(row-1, column-1, value, mine)
 
 
     '''
