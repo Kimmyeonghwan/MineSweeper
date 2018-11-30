@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QLayout, QGridLayout, QLabel, QComboBox
 from PyQt5.QtWidgets import QToolButton, QPushButton, QGroupBox
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QSizePolicy
+from PyQt5.QtGui import QFont
 from button import Button
 from observer import Observer
 
@@ -32,11 +33,14 @@ class View(Observer, QWidget):
         optionLayout.addWidget(self.optionButton, 0, 2)
         self.optionGroup.setLayout(optionLayout)
 
+        font = QFont()
+        font.setPointSize(50)
         selectedLayout = QGridLayout()
         self.selectedGroup = QGroupBox("Total Mines")
         self.selectedLabel = QLabel()
         self.selectedLabel.setAlignment(Qt.AlignCenter)
-        self.selectedLabel.font().setPointSize(self.selectedLabel.font().pointSize() + 10)
+        self.selectedLabel.setFont(font)
+        # self.selectedLabel.font().setPointSize(self.selectedLabel.font().pointSize() + 50)
         selectedLayout.addWidget(self.selectedLabel, 0, 0)
         self.selectedGroup.setLayout(selectedLayout)
 
@@ -105,7 +109,7 @@ class View(Observer, QWidget):
         i = 0
         j = 0
         for button in range(self.size**2):
-            self.mineButtons[i][j] = Button('', i, j, 0, self.mineButtonClicked)
+            self.mineButtons[i][j] = Button(' ', i, j, 0, self.mineButtonClicked)
             self.mineLayout.addWidget(self.mineButtons[i][j], i, j)
             j += 1
             if j == self.size:
