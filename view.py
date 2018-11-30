@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QLayout, QGridLayout, QLabel, QComboBox
 from PyQt5.QtWidgets import QToolButton, QPushButton, QGroupBox
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QSizePolicy
+from PyQt5.QtGui import QFont
 from button import Button
 from observer import Observer
 
@@ -34,11 +35,18 @@ class View(Observer, QWidget):
         optionLayout.addWidget(self.optionButton, 0, 2)
         self.optionGroup.setLayout(optionLayout)
 
+        topFont = QFont()
+        topFont.setPointSize(30)
+        statusFont = QFont()
+        statusFont.setPointSize(20)
+        displayFont = QFont()
+        displayFont.setPointSize(12)
+
         selectedLayout = QGridLayout()
         self.selectedGroup = QGroupBox("Total Mines")
         self.selectedLabel = QLabel()
         self.selectedLabel.setAlignment(Qt.AlignCenter)
-        self.selectedLabel.font().setPointSize(self.selectedLabel.font().pointSize() + 10)
+        self.selectedLabel.setFont(topFont)
         selectedLayout.addWidget(self.selectedLabel, 0, 0)
         self.selectedGroup.setLayout(selectedLayout)
 
@@ -59,11 +67,17 @@ class View(Observer, QWidget):
         statusLayout = QGridLayout()
         self.statusGroup = QGroupBox("Game Status")
         self.arrayDisplay = QLabel("Array size : ")
+        self.arrayDisplay.setFont(displayFont)
         self.arrayLabel = QLabel(str(self.length)+"x"+str(self.length))
+        self.arrayLabel.setFont(statusFont)
         self.unknownDisplay = QLabel("Unknown areas : ")
+        self.unknownDisplay.setFont(displayFont)
         self.unknownLabel = QLabel(str(self.length**2))
+        self.unknownLabel.setFont(statusFont)
         self.flagDisplay = QLabel("Flag areas : ")
+        self.flagDisplay.setFont(displayFont)
         self.flagLabel = QLabel(str(self.flags))
+        self.flagLabel.setFont(statusFont)
         statusLayout.addWidget(self.arrayDisplay, 0, 0)
         statusLayout.addWidget(self.arrayLabel, 0, 1)
         statusLayout.addWidget(self.unknownDisplay, 1, 0)
