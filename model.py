@@ -35,7 +35,6 @@ class Model(Observable):
         self.printMineStatus()
         self.mineNumbers = mineNumber
 
-
     def setCount(self):
         row = 1
         column = 1
@@ -131,6 +130,7 @@ class Model(Observable):
             for row in range(1, self.size+1):
                 for column in range(1, self.size+1):
                     self.notifyMine(row, column, self.current[row][column])
+            test = True
         else:
             self.unknowns = 0
             for row in range(1, self.size+1):
@@ -139,11 +139,14 @@ class Model(Observable):
                         self.unknowns += 1
                     else:
                         self.notifyMine(row, column, self.current[row][column])
+            test = False
+
         if self.unknowns == self.mineNumbers:
             self.unknowns = 'GAME CLEAR'
             for minePoint in self.answer:
                 self.notifyMine(minePoint[0], minePoint[1], 0)
         self.notifyStatus(self.unknowns)
+        return test
 
     def notifyMine(self, row, column, value):
         for observer in self.observers:
