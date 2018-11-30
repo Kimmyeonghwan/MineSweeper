@@ -16,6 +16,7 @@ class Model(Observable):
 
     def setArray(self, size, mineNumber):
         # Make a new array and Locate mines at random index
+        self.finished = False
         self.size = size
         self.answer = []
         self.mine = [[0 for x in range(size+2)] for y in range(size+2)]
@@ -122,8 +123,8 @@ class Model(Observable):
                 print(self.current[i][j], end=' ')
             print()
 
-    def getStatus(self):
-        if self.finished:
+    def getStatus(self, finished):
+        if self.finished or finished:
             self.unknowns = 'GAME OVER'
             for minePoint in self.answer:
                 self.current[minePoint[0]][minePoint[1]] = -1
@@ -140,6 +141,8 @@ class Model(Observable):
                         self.notifyMine(row, column, self.current[row][column])
         if self.unknowns == self.mineNumbers:
             self.unknowns = 'GAME CLEAR'
+            for minePoint in self.answer:
+                self.notifyMine(minePoint[0], minePoint[1], 0)
         self.notifyStatus(self.unknowns)
 
     def notifyMine(self, row, column, value):
