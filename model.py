@@ -10,21 +10,24 @@ class Model(Observable):
         self.size = 0
         self.mine = []
         self.current = []
-        self.mineNumbers = 0
+        self.unknowns = 0
+        self.finished = False
 
 
     def setArray(self, size, mineNumber):
         # Make a new array and Locate mines at random index
         self.size = size
+        self.answer = []
         self.mine = [[0 for x in range(size+2)] for y in range(size+2)]
         self.current = [['_' for x in range(size+2)] for y in range(size+2)]
-        for n in range(int(mineNumber)):
+        for n in range(mineNumber):
             i = random.randrange(1, self.size+1)
             j = random.randrange(1, self.size+1)
             while self.mine[i][j] != 0:
                 i = random.randrange(1, self.size+1)
                 j = random.randrange(1, self.size+1)
             self.mine[i][j] = "*"
+            self.answer.append((i, j))
         # Calculate and set counts next to bomb.
         self.setCount()
 
@@ -55,28 +58,28 @@ class Model(Observable):
         if self.mine[row][column] != '*':
             self.mine[row][column] += 1
 
-
     def guess(self, row, column, parent=None):
         # out of range 처리
         if (not(0 < row <= self.size)) or (not(0 < column <= self.size)):
-            return
+            return True
 
-        # Found bomb.
+        # 지뢰 발견
         if self.mine[row][column] == '*':
-            self.current = [['x' for x in range(self.size+2)] for y in range(self.size+2)]
-            self.notify(row, column, -1, self.mineNumbers)
-            return
+            self.current = [[' ' for x in range(self.size+2)] for y in range(self.size+2)]
+            self.finished = True
+            return False
+
+        if self.mine[row][column] == ' ':
+            return True
 
         # 지뢰 인접 구역 발견
-        if self.mine[row][column] != 0:
+        if self.mine[row][column] > 0:
             self.current[row][column] = self.mine[row][column]
-            self.notify(row, column, self.current[row][column], self.mineNumbers)
-            return
+            return True
 
         # 황무지 발견
-        self.mine[row][column] = ' ' #얘 왜?왜?왜얘왜왜왜?????
+        self.mine[row][column] = ' '
         self.current[row][column] = ' '
-        self.notify(row, column, self.current[row][column], self.mineNumbers)
 
         if parent == 'left':
             return (
@@ -119,10 +122,33 @@ class Model(Observable):
                 print(self.current[i][j], end=' ')
             print()
 
-    def notify(self, row, column, value, mine):
-        for observer in self.observers:
-            observer.update(row-1, column-1, value, mine)
+    def getStatus(self):
+        if self.finished:
+            self.unknowns = 'GAME OVER'
+            for minePoint in self.answer:
+                self.current[minePoint[0]][minePoint[1]] = -1
+            for row in range(1, self.size+1):
+                for column in range(1, self.size+1):
+                    self.notifyMine(row, column, self.current[row][column])
+        else:
+            self.unknowns = 0
+            for row in range(1, self.size+1):
+                for column in range(1, self.size+1):
+                    if self.current[row][column] == '_':
+                        self.unknowns += 1
+                    else:
+                        self.notifyMine(row, column, self.current[row][column])
+        if self.unknowns == self.mineNumbers:
+            self.unknowns = 'GAME CLEAR'
+        self.notifyStatus(self.unknowns)
 
+    def notifyMine(self, row, column, value):
+        for observer in self.observers:
+            observer.updateMine(row-1, column-1, value)
+
+    def notifyStatus(self, unknowns):
+        for observer in self.observers:
+            observer.updateStatus(unknowns)
 
     '''
     def test_normal(self, row, column):
@@ -139,5 +165,5 @@ class Model(Observable):
 if __name__ == '__main__':
     model = Model()
     model.setArray(10, 20)
-    model.guess(2,2)
+    print(model.guess(2,2))
     model.printCurrentStatus()

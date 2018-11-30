@@ -14,7 +14,7 @@ class View(Observer, QWidget):
         super().__init__(parent)
         self.controller = controller
         self.setSize()
-        self.mineButtons = [['' for i in range(self.size)] for j in range(self.size)]
+        self.mineButtons = [[' ' for i in range(self.size)] for j in range(self.size)]
         self.initUI()
 
 
@@ -46,7 +46,7 @@ class View(Observer, QWidget):
         i = 0
         j = 0
         for button in range(self.size**2):
-            self.mineButtons[i][j] = Button('', i, j, 0, self.mineButtonClicked)
+            self.mineButtons[i][j] = Button(' ', i, j, 0, self.mineButtonClicked)
             self.mineLayout.addWidget(self.mineButtons[i][j], i, j)
             j += 1
             if j == self.size:
@@ -59,8 +59,7 @@ class View(Observer, QWidget):
         self.arrayDisplay = QLabel("Array size : ")
         self.arrayLabel = QLabel(str(self.size)+"x"+str(self.size))
         self.unknownDisplay = QLabel("Unknown areas : ")
-        self.unknowns = self.size ** 2
-        self.unknownLabel = QLabel(str(self.unknowns))
+        self.unknownLabel = QLabel(str(self.size**2))
         self.flagDisplay = QLabel("Flag areas : ")
         self.flags = 0
         self.flagLabel = QLabel(str(self.flags))
@@ -121,24 +120,19 @@ class View(Observer, QWidget):
 
     def mineButtonClicked(self, button):
         if button.status == 0:
-            self.unknowns -= 1
             button.setStyleSheet('color: rgb(0, 0, 0)')
+            self.setButtonText(button, '')
             self.controller.guessArea(button.row, button.column)
-
+            self.controller.getCurrentStatus()
 
         elif button.status == 1:
-            if int(self.mineNumber) - self.flags > 0:  # 깃발 개수는 최대 폭탄 개수를 넘길 수 없음
-                self.unknowns -= 1
+            if self.mineNumber - self.flags > 0:  # 깃발 개수는 최대 폭탄 개수를 넘길 수 없음
                 self.flags += 1
                 button.setText('✖')
                 button.setStyleSheet('color: rgb(255, 0, 0)')
         else:
-            if button.text() == '✖':
-                self.flags -= 1
-                self.unknowns += 1
-                button.status = 0
-                button.setText('')
-                button.setStyleSheet('color: rgb(0, 0, 0)')
+            self.setButtonText(button, '')
+            button.setStyleSheet('color: rgb(0, 0, 0)')
 
         # 최대 폭탄 개수가 5개라면, 깃발 5개를 꽂으면 더이상 우클릭으로 깃발을 만들지 않음.
         # 그런 상태에서 좌클릭으로 popzero를 터트리면, Total Mines 값이 최대 폭탄 값으로 돌아가야하는데
@@ -147,16 +141,15 @@ class View(Observer, QWidget):
         # 아마 해결 방안도 똑같거나 비슷하다고 생각함.
         # flags, unknowns 값을 update에서 수정해주면 좋을 것 같은데.. 뷰 자체에 구현을 해봤지만 의미 없었음
         # flags, unknowns 값을 update로 수정하려면 변수들을 모델로 이동 + 로직 추가 ...
-        self.selectedLabel.setText(str(int(self.mineNumber) - self.flags))  # Total Mines 값은 (폭탄 개수 - 깃발 꽂은 개수)
+        #self.selectedLabel.setText(str(self.mineNumber-self.flags))  # Total Mines 값은 (폭탄 개수 - 깃발 꽂은 개수)
         self.flagLabel.setText(str(self.flags))
-        self.unknownLabel.setText(str(self.unknowns))
 
 
     def optionButtonClicked(self):
         self.optionGroup.setEnabled(False)
         self.mineGroup.setEnabled(True)
-        self.mineNumber = self.optionBox.currentText()
-        self.selectedLabel.setText(self.mineNumber)
+        self.mineNumber = int(self.optionBox.currentText())
+        self.selectedLabel.setText(str(self.mineNumber))
         self.selectedLabel.setStyleSheet('color: rgb(0, 0, 255)')
 
         self.controller.notifyArray(self.size, self.mineNumber)
@@ -194,38 +187,39 @@ class View(Observer, QWidget):
         self.size = (8 if self.level == 2 else (12 if self.level == 1 else 16))
 
 
-    def update(self, row, column, value, mineNumbers):
-        if value == -1:
-            i = 0
-            j = 0
-            for button in range(self.size ** 2):
-                self.mineButtons[i][j].setText('x')
-                self.mineButtons[i][j].setStyleSheet('color: rgb(0, 0, 0)')
-                self.mineButtons[i][j].setEnabled(False)
-                j += 1
-                if j == self.size:
-                    i += 1
-                    j = 0
+    def updateMine(self, row, column, value):
+        if type(value) == int:
+            if value == -1:
+                self.mineGroup.setEnabled(False)
+                self.mineButtons[row][column].setText('☹')
+                self.mineButtons[row][column].setStyleSheet('color: rgb(255, 0, 0)')
+            else:
+                if value == 1:
+                    self.mineButtons[row][column].setStyleSheet('color: rgb(0, 0, 150)')
+                elif value == 2:
+                    self.mineButtons[row][column].setStyleSheet('color: rgb(0, 150, 0)')
+                elif value == 3:
+                    self.mineButtons[row][column].setStyleSheet('color: rgb(150, 0, 0)')
+                else:
+                    self.mineButtons[row][column].setStyleSheet('color: rgb(150, 150, 0)')
+                self.mineButtons[row][column].setStyleSheet("background-color: gray")  # 버튼 배경 색
+                self.setButtonText(self.mineButtons[row][column], str(value))
+                self.mineButtons[row][column].setEnabled(False)
         else:
-            if type(value) != int:
-                self.mineButtons[row][column].setText('0')
-            elif value == 1:
-                self.mineButtons[row][column].setStyleSheet('color: rgb(0, 0, 150)')
-                self.mineButtons[row][column].setText(str(value))
-            elif value == 2:
-                self.mineButtons[row][column].setStyleSheet('color: rgb(0, 150, 0)')
-                self.mineButtons[row][column].setText(str(value))
-            elif value == 3:
-                self.mineButtons[row][column].setStyleSheet('color: rgb(150, 0, 0)')
-                self.mineButtons[row][column].setText(str(value))
-            elif value >= 4:
-                self.mineButtons[row][column].setStyleSheet('color: rgb(150, 150, 0)')
-            self.mineButtons[row][column].setText(str(value))
-            self.mineButtons[row][column].setStyleSheet("background-color: gray") #버튼 배경 색
+            self.mineButtons[row][column].setStyleSheet("background-color: gray")  # 버튼 배경 색
+            self.setButtonText(self.mineButtons[row][column], str(value))
             self.mineButtons[row][column].setEnabled(False)
 
-        self.mineNumber = mineNumbers
+    def updateStatus(self, unknowns):
+        self.unknownLabel.setText(str(unknowns))
+        if unknowns == 'GAME CLEAR':
+            self.mineGroup.setEnabled(False)
 
+    def setButtonText(self, button, content=''):
+        if button.text() == '✖':
+            self.flags -= 1
+            button.status = 0
+        button.setText(content)
 
 
 if __name__ == '__main__':
