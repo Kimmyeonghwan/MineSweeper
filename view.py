@@ -17,24 +17,12 @@ class View(Observer, QWidget):
         self.flags = 0
 
         self.setSize()
-        self.mineButtons = [['' for i in range(self.length)] for j in range(self.length)]
+        self.mineButtons = [['' for i in range(self.size)] for j in range(self.size)]
         self.initUI()
 
 
     def initUI(self):
-        optionLayout = QGridLayout()
-        self.optionGroup = QGroupBox("Mine Options")
-        self.optionLabel = QLabel("Select the number of mines : ")
-        self.optionBox = QComboBox()
-        self.optionBox.addItems(list(map(str, range(1, self.length**2))))
-        self.optionBox.setCurrentIndex(3*(self.length-1))
-        self.optionButton = QPushButton("Start")
-        self.optionButton.clicked.connect(self.optionButtonClicked)
-        optionLayout.addWidget(self.optionLabel, 0, 0)
-        optionLayout.addWidget(self.optionBox, 0, 1)
-        optionLayout.addWidget(self.optionButton, 0, 2)
-        self.optionGroup.setLayout(optionLayout)
-
+        # font size for label setting
         topFont = QFont()
         topFont.setPointSize(30)
         statusFont = QFont()
@@ -42,6 +30,22 @@ class View(Observer, QWidget):
         displayFont = QFont()
         displayFont.setPointSize(12)
 
+        # Option layout setting
+        optionLayout = QGridLayout()
+        self.optionGroup = QGroupBox("Mine Options")
+        self.optionLabel = QLabel("Select the number of mines : ")
+        self.optionLabel.setFont(displayFont)
+        self.optionBox = QComboBox()
+        self.optionBox.addItems(list(map(str, range(1, self.size**2))))
+        self.optionBox.setCurrentIndex(3*(self.size-1))
+        self.optionButton = QPushButton("Start")
+        self.optionButton.clicked.connect(self.optionButtonClicked)
+        optionLayout.addWidget(self.optionLabel, 0, 0)
+        optionLayout.addWidget(self.optionBox, 0, 1)
+        optionLayout.addWidget(self.optionButton, 0, 2)
+        self.optionGroup.setLayout(optionLayout)
+
+        # Number of mines layout setting
         selectedLayout = QGridLayout()
         self.selectedGroup = QGroupBox("Total Mines")
         self.selectedLabel = QLabel()
@@ -50,29 +54,31 @@ class View(Observer, QWidget):
         selectedLayout.addWidget(self.selectedLabel, 0, 0)
         self.selectedGroup.setLayout(selectedLayout)
 
+        # Mine button layout setting
         self.mineLayout = QGridLayout()
         self.mineGroup = QGroupBox("Game Main")
         self.mineGroup.setEnabled(False)
-        i = 0
-        j = 0
-        for button in range(self.length**2):
-            self.mineButtons[i][j] = Button('', i, j, 0, self.mineButtonClicked)
-            self.mineLayout.addWidget(self.mineButtons[i][j], i, j)
-            j += 1
-            if j == self.length:
-                i += 1
-                j = 0
+        row = 0
+        column = 0
+        for button in range(self.size**2):
+            self.mineButtons[row][column] = Button('', row, column, 0, self.mineButtonClicked)
+            self.mineLayout.addWidget(self.mineButtons[row][column], row, column)
+            column += 1
+            if column == self.size:
+                row += 1
+                column = 0
         self.mineGroup.setLayout(self.mineLayout)
 
+        # current game status setting
         statusLayout = QGridLayout()
         self.statusGroup = QGroupBox("Game Status")
         self.arrayDisplay = QLabel("Array size : ")
         self.arrayDisplay.setFont(displayFont)
-        self.arrayLabel = QLabel(str(self.length)+"x"+str(self.length))
+        self.arrayLabel = QLabel(str(self.size)+"x"+str(self.size))
         self.arrayLabel.setFont(statusFont)
         self.unknownDisplay = QLabel("Unknown areas : ")
         self.unknownDisplay.setFont(displayFont)
-        self.unknownLabel = QLabel(str(self.length**2))
+        self.unknownLabel = QLabel(str(self.size**2))
         self.unknownLabel.setFont(statusFont)
         self.flagDisplay = QLabel("Flag areas : ")
         self.flagDisplay.setFont(displayFont)
@@ -86,6 +92,7 @@ class View(Observer, QWidget):
         statusLayout.addWidget(self.flagLabel, 2, 1)
         self.statusGroup.setLayout(statusLayout)
 
+        # game menu layout setting
         menuLayout = QGridLayout()
         self.menuGroup = QGroupBox("Game menu")
         self.exitButton = QPushButton("Exit")
@@ -103,6 +110,7 @@ class View(Observer, QWidget):
         self.newGameButton.clicked.connect(self.menuButtonClicked)
         self.giveUpButton.clicked.connect(self.menuButtonClicked)
 
+        # main layout setting
         mainLayout = QGridLayout()
         mainLayout.addWidget(self.optionGroup, 0, 0)
         mainLayout.addWidget(self.selectedGroup, 0, 1)
@@ -115,26 +123,29 @@ class View(Observer, QWidget):
         self.setWindowTitle("MineSweeper")
         self.show()
 
+
     def reStartGame(self):
         # initialize game ui
         self.optionGroup.setEnabled(True)
         self.mineGroup.setEnabled(False)
-        self.unknownLabel.setText(str(self.length ** 2))
+        self.unknownLabel.setText(str(self.size ** 2))
+        self.unknownLabel.setStyleSheet('color: rgb(0, 0, 0)')
         self.flags = 0
+
+        # re-compose buttons
         i = 0
         j = 0
-        for button in range(self.length**2):
+        for button in range(self.size**2):
             self.mineButtons[i][j] = Button('', i, j, 0, self.mineButtonClicked)
             self.mineLayout.addWidget(self.mineButtons[i][j], i, j)
             j += 1
-            if j == self.length:
+            if j == self.size:
                 i += 1
                 j = 0
         self.mineGroup.setLayout(self.mineLayout)
 
 
     def giveUpGame(self):
-        # 버튼 정답을 다 알려주는 코드 작성 (미완성)
         self.controller.getCurrentStatus(True)
         self.optionGroup.setEnabled(False)
         self.mineGroup.setEnabled(False)
@@ -145,7 +156,6 @@ class View(Observer, QWidget):
             self.setButtonText(button, '')
             self.controller.guessArea(button.row, button.column)
             self.controller.getCurrentStatus()
-
         elif button.status == 1:
             if self.mineNumber - self.flags > 0:  # 깃발 개수는 최대 폭탄 개수를 넘길 수 없음
                 self.flags += 1
@@ -154,15 +164,6 @@ class View(Observer, QWidget):
         else:
             self.setButtonText(button, '')
             button.setStyleSheet('color: rgb(0, 0, 0)')
-
-        # 최대 폭탄 개수가 5개라면, 깃발 5개를 꽂으면 더이상 우클릭으로 깃발을 만들지 않음.
-        # 그런 상태에서 좌클릭으로 popzero를 터트리면, Total Mines 값이 최대 폭탄 값으로 돌아가야하는데
-        # 여전히 0이라서 우클릭으로 깃발을 꽂지 못하는 버그 발생
-        # 해당 버그는 popzero가 터트렸을 때, unknowns 값이 1만 감소하는 것을 보면 이해하기 쉬울 것 같음.
-        # 아마 해결 방안도 똑같거나 비슷하다고 생각함.
-        # flags, unknowns 값을 update에서 수정해주면 좋을 것 같은데.. 뷰 자체에 구현을 해봤지만 의미 없었음
-        # flags, unknowns 값을 update로 수정하려면 변수들을 모델로 이동 + 로직 추가 ...
-        #self.selectedLabel.setText(str(self.mineNumber-self.flags))  # Total Mines 값은 (폭탄 개수 - 깃발 꽂은 개수)
         self.flagLabel.setText(str(self.flags))
 
 
@@ -172,7 +173,7 @@ class View(Observer, QWidget):
         self.mineNumber = int(self.optionBox.currentText())
         self.selectedLabel.setText(str(self.mineNumber))
         self.selectedLabel.setStyleSheet('color: rgb(0, 0, 250)')
-        self.controller.notifyArray(self.length, self.mineNumber)
+        self.controller.notifyArray(self.size, self.mineNumber)
 
 
     def menuButtonClicked(self):
@@ -204,7 +205,7 @@ class View(Observer, QWidget):
         msgBox.addButton(QPushButton('Normal(12x12)'), QMessageBox.NoRole)
         msgBox.addButton(QPushButton('Easy(8x8)'), QMessageBox.YesRole)
         self.level = msgBox.exec_()
-        self.length = (8 if self.level == 2 else (12 if self.level == 1 else 16))
+        self.size = (8 if self.level == 2 else (12 if self.level == 1 else 16))
 
 
     def updateMine(self, row, column, value):
@@ -245,12 +246,4 @@ class View(Observer, QWidget):
             self.flags -= 1
             button.status = 0
         button.setText(content)
-
-
-if __name__ == '__main__':
-    import sys
-    app = QApplication(sys.argv)
-    game = View()
-    game.show()
-    sys.exit(app.exec_())
 
