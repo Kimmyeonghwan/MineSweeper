@@ -26,8 +26,8 @@ class View(Observer, QWidget):
         self.optionGroup = QGroupBox("Mine Options")
         self.optionLabel = QLabel("Select the number of mines : ")
         self.optionBox = QComboBox()
-        self.optionBox.addItems(list(map(str, range(1, self.length**2))))
-        self.optionBox.setCurrentIndex(3*(self.length-1))
+        self.optionBox.addItems(list(map(str, range(1, self.length ** 2))))
+        self.optionBox.setCurrentIndex(3 * (self.length - 1))
         self.optionButton = QPushButton("Start")
         self.optionButton.clicked.connect(self.optionButtonClicked)
         optionLayout.addWidget(self.optionLabel, 0, 0)
@@ -55,7 +55,7 @@ class View(Observer, QWidget):
         self.mineGroup.setEnabled(False)
         i = 0
         j = 0
-        for button in range(self.length**2):
+        for button in range(self.length ** 2):
             self.mineButtons[i][j] = Button('', i, j, 0, self.mineButtonClicked)
             self.mineLayout.addWidget(self.mineButtons[i][j], i, j)
             j += 1
@@ -68,11 +68,11 @@ class View(Observer, QWidget):
         self.statusGroup = QGroupBox("Game Status")
         self.arrayDisplay = QLabel("Array size : ")
         self.arrayDisplay.setFont(displayFont)
-        self.arrayLabel = QLabel(str(self.length)+"x"+str(self.length))
+        self.arrayLabel = QLabel(str(self.length) + "x" + str(self.length))
         self.arrayLabel.setFont(statusFont)
         self.unknownDisplay = QLabel("Unknown areas : ")
         self.unknownDisplay.setFont(displayFont)
-        self.unknownLabel = QLabel(str(self.length**2))
+        self.unknownLabel = QLabel(str(self.length ** 2))
         self.unknownLabel.setFont(statusFont)
         self.flagDisplay = QLabel("Flag areas : ")
         self.flagDisplay.setFont(displayFont)
@@ -123,7 +123,7 @@ class View(Observer, QWidget):
         self.flags = 0
         i = 0
         j = 0
-        for button in range(self.length**2):
+        for button in range(self.length ** 2):
             self.mineButtons[i][j] = Button('', i, j, 0, self.mineButtonClicked)
             self.mineLayout.addWidget(self.mineButtons[i][j], i, j)
             j += 1
