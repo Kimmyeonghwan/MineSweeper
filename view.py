@@ -17,7 +17,7 @@ class View(Observer, QWidget):
         self.flags = 0
 
         self.setSize()
-        self.mineButtons = [['' for i in range(self.size)] for j in range(self.size)]
+        self.mineButtons = [['' for i in range(self.length)] for j in range(self.length)]
         self.initUI()
 
 
@@ -26,8 +26,8 @@ class View(Observer, QWidget):
         self.optionGroup = QGroupBox("Mine Options")
         self.optionLabel = QLabel("Select the number of mines : ")
         self.optionBox = QComboBox()
-        self.optionBox.addItems(list(map(str, range(1, self.size**2))))
-        self.optionBox.setCurrentIndex(3*(self.size-1))
+        self.optionBox.addItems(list(map(str, range(1, self.length**2))))
+        self.optionBox.setCurrentIndex(3*(self.length-1))
         self.optionButton = QPushButton("Start")
         self.optionButton.clicked.connect(self.optionButtonClicked)
         optionLayout.addWidget(self.optionLabel, 0, 0)
@@ -35,14 +35,18 @@ class View(Observer, QWidget):
         optionLayout.addWidget(self.optionButton, 0, 2)
         self.optionGroup.setLayout(optionLayout)
 
-        font = QFont()
-        font.setPointSize(50)
+        topFont = QFont()
+        topFont.setPointSize(30)
+        statusFont = QFont()
+        statusFont.setPointSize(20)
+        displayFont = QFont()
+        displayFont.setPointSize(12)
+
         selectedLayout = QGridLayout()
         self.selectedGroup = QGroupBox("Total Mines")
         self.selectedLabel = QLabel()
         self.selectedLabel.setAlignment(Qt.AlignCenter)
-        self.selectedLabel.setFont(font)
-        # self.selectedLabel.font().setPointSize(self.selectedLabel.font().pointSize() + 50)
+        self.selectedLabel.setFont(topFont)
         selectedLayout.addWidget(self.selectedLabel, 0, 0)
         self.selectedGroup.setLayout(selectedLayout)
 
@@ -51,11 +55,11 @@ class View(Observer, QWidget):
         self.mineGroup.setEnabled(False)
         i = 0
         j = 0
-        for button in range(self.size**2):
+        for button in range(self.length**2):
             self.mineButtons[i][j] = Button('', i, j, 0, self.mineButtonClicked)
             self.mineLayout.addWidget(self.mineButtons[i][j], i, j)
             j += 1
-            if j == self.size:
+            if j == self.length:
                 i += 1
                 j = 0
         self.mineGroup.setLayout(self.mineLayout)
@@ -63,11 +67,17 @@ class View(Observer, QWidget):
         statusLayout = QGridLayout()
         self.statusGroup = QGroupBox("Game Status")
         self.arrayDisplay = QLabel("Array size : ")
-        self.arrayLabel = QLabel(str(self.size)+"x"+str(self.size))
+        self.arrayDisplay.setFont(displayFont)
+        self.arrayLabel = QLabel(str(self.length)+"x"+str(self.length))
+        self.arrayLabel.setFont(statusFont)
         self.unknownDisplay = QLabel("Unknown areas : ")
-        self.unknownLabel = QLabel(str(self.size**2))
+        self.unknownDisplay.setFont(displayFont)
+        self.unknownLabel = QLabel(str(self.length**2))
+        self.unknownLabel.setFont(statusFont)
         self.flagDisplay = QLabel("Flag areas : ")
+        self.flagDisplay.setFont(displayFont)
         self.flagLabel = QLabel(str(self.flags))
+        self.flagLabel.setFont(statusFont)
         statusLayout.addWidget(self.arrayDisplay, 0, 0)
         statusLayout.addWidget(self.arrayLabel, 0, 1)
         statusLayout.addWidget(self.unknownDisplay, 1, 0)
@@ -99,6 +109,7 @@ class View(Observer, QWidget):
         mainLayout.addWidget(self.mineGroup, 1, 0)
         mainLayout.addWidget(self.statusGroup, 1, 1)
         mainLayout.addWidget(self.menuGroup, 2, 0, 1, 2)
+        mainLayout.setSizeConstraint(QLayout.SetFixedSize)
 
         self.setLayout(mainLayout)
         self.setWindowTitle("MineSweeper")
@@ -108,15 +119,15 @@ class View(Observer, QWidget):
         # initialize game ui
         self.optionGroup.setEnabled(True)
         self.mineGroup.setEnabled(False)
-        self.unknownLabel.setText(str(self.size ** 2))
+        self.unknownLabel.setText(str(self.length ** 2))
         self.flags = 0
         i = 0
         j = 0
-        for button in range(self.size**2):
-            self.mineButtons[i][j] = Button(' ', i, j, 0, self.mineButtonClicked)
+        for button in range(self.length**2):
+            self.mineButtons[i][j] = Button('', i, j, 0, self.mineButtonClicked)
             self.mineLayout.addWidget(self.mineButtons[i][j], i, j)
             j += 1
-            if j == self.size:
+            if j == self.length:
                 i += 1
                 j = 0
         self.mineGroup.setLayout(self.mineLayout)
@@ -160,8 +171,8 @@ class View(Observer, QWidget):
         self.mineGroup.setEnabled(True)
         self.mineNumber = int(self.optionBox.currentText())
         self.selectedLabel.setText(str(self.mineNumber))
-        self.selectedLabel.setStyleSheet('color: rgb(0, 0, 255)')
-        self.controller.notifyArray(self.size, self.mineNumber)
+        self.selectedLabel.setStyleSheet('color: rgb(0, 0, 250)')
+        self.controller.notifyArray(self.length, self.mineNumber)
 
 
     def menuButtonClicked(self):
@@ -193,7 +204,7 @@ class View(Observer, QWidget):
         msgBox.addButton(QPushButton('Normal(12x12)'), QMessageBox.NoRole)
         msgBox.addButton(QPushButton('Easy(8x8)'), QMessageBox.YesRole)
         self.level = msgBox.exec_()
-        self.size = (8 if self.level == 2 else (12 if self.level == 1 else 16))
+        self.length = (8 if self.level == 2 else (12 if self.level == 1 else 16))
 
 
     def updateMine(self, row, column, value):
@@ -201,25 +212,24 @@ class View(Observer, QWidget):
             if value == -1:
                 self.mineGroup.setEnabled(False)
                 self.mineButtons[row][column].setText('☹')
-                self.mineButtons[row][column].setStyleSheet('color: rgb(200, 100, 100)')
+                self.mineButtons[row][column].setStyleSheet('background-color: gray; color: rgb(250, 0, 0)')
             elif value == 0:
                 self.mineGroup.setEnabled(False)
                 self.mineButtons[row][column].setText('☺')
-                self.mineButtons[row][column].setStyleSheet('color: rgb(100, 200, 100)')
+                self.mineButtons[row][column].setStyleSheet('background-color: gray; color: rgb(0, 250, 0)')
             else:
                 if value == 1:
-                    self.mineButtons[row][column].setStyleSheet('color: rgb(0, 0, 150)')
+                    self.mineButtons[row][column].setStyleSheet("background-color: gray; color: rgb(0, 0, 250)")
                 elif value == 2:
-                    self.mineButtons[row][column].setStyleSheet('color: rgb(0, 150, 0)')
+                    self.mineButtons[row][column].setStyleSheet("background-color: gray; color: rgb(0, 250, 0)")
                 elif value == 3:
-                    self.mineButtons[row][column].setStyleSheet('color: rgb(150, 0, 0)')
+                    self.mineButtons[row][column].setStyleSheet("background-color: gray; color: rgb(250, 0, 0)")
                 else:
-                    self.mineButtons[row][column].setStyleSheet('color: rgb(150, 150, 0)')
-                #self.mineButtons[row][column].setStyleSheet("background-color: gray")  # 버튼 배경 색
+                    self.mineButtons[row][column].setStyleSheet("background-color: gray; color: rgb(250, 250, 0)")
                 self.setButtonText(self.mineButtons[row][column], str(value))
                 self.mineButtons[row][column].setEnabled(False)
         else:
-            #self.mineButtons[row][column].setStyleSheet("background-color: gray")  # 버튼 배경 색
+            self.mineButtons[row][column].setStyleSheet("background-color: gray")
             self.setButtonText(self.mineButtons[row][column], str(value))
             self.mineButtons[row][column].setEnabled(False)
 
