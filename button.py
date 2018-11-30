@@ -9,13 +9,14 @@ class Button(QToolButton):
         super().__init__()
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         self.setText(text)
+
         self.row = row
         self.column = column
         self.status = status
         self.callback = callback
-
         font = self.font()
         font.setPointSize(font.pointSize()+5)
+        self.setFixedSize(self.sizeHint())
 
 
     def sizeHint(self):
