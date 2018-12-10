@@ -69,7 +69,7 @@ class Model(Observable):
             self.finished = True
             return False
 
-        if self.mine[row][column] == ' ':
+        if self.current[row][column] == ' ':
             return True
 
         # 지뢰 인접 구역 발견
@@ -78,7 +78,6 @@ class Model(Observable):
             return True
 
         # 황무지 발견
-        self.mine[row][column] = ' '
         self.current[row][column] = ' '
 
         if parent == 'left':
